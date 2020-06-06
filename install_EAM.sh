@@ -186,18 +186,17 @@ unzip -qq master.zip
 #Protege
 chmod u+x install_protege_3.5-Linux64-noJVM.bin
 
-
+echo
 #### START INSTALL ####
 #Install Java
-#apt install default-jdk
-echo
+apt-get -qq remove openjdk-11-jre-headless
 cecho BIYellow "Installing Java:"
-echo "Running apt install default-jre-headless"
-apt-get -qq install default-jre-headless
+echo "Running apt install openjdk-8-jre-headless"
+apt-get -qq install openjdk-8-jre-headless
 
+echo
 #Install tomcat
 #Create tomcat user
-echo
 cecho BIYellow "Installing Tomcat:"
 cecho White "Setting up users"
 groupadd tomcat 2> /dev/null
@@ -264,21 +263,20 @@ java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI
 
 #Install the latest model
 cecho BIYellow "Installing Essential Model Project Files"
+echo "Copying latest model project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
 unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
 chmod 777 /opt/essentialAM/repo/essential_baseline_*
+echo "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
-exit
 
 # Install the tomcat war files and tidy up
 echo "Installing Essential Viewer"
 cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer.war
 echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
-
-
 
 echo "ALL DONE!"
 
