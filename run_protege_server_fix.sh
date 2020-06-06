@@ -11,7 +11,7 @@ CODEBASE_URL=file:/root/Protege_3.5/protege.jar
 CODEBASE=-Djava.rmi.server.codebase=$CODEBASE_URL
 HOSTNAME_PARAM=-Djava.rmi.server.hostname=ubuntutemplate.localdomain
 TX="-Dtransaction.level=READ_COMMITTED"
-LOG4J_OPT="-Dlog4j.configuration=file:/root/Protege_3.5/logs/log4j.xml"
+LOG4J_OPT="-Dlog4j.configuration=file:/root/Protege_3.5/log4j.xml"
 
 OPTIONS="$MAX_MEMORY $HEADLESS $CODEBASE $HOSTNAME_PARAM ${TX} ${LOG4J_OPT}"
 
