@@ -167,10 +167,10 @@ else
 fi
 
 # Download JDBC driver for MySQL
-if [ -f "mysql-connector-java_8.0.20-1ubuntu20.04_all.deb" ]; then
+if [ -f "mysql-connector-java-8.0.20.tar.gz" ]; then
     cecho BIGreen "MySQL JDBC Installer download exists"
 else
-    wget --tries=3 --progress=bar:force:noscroll https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java_8.0.20-1ubuntu20.04_all.deb 2> /dev/null
+    wget --tries=3 --progress=bar:force:noscroll https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.20.tar.gz 2> /dev/null
 fi
 
 #### PREPARE DOWNLOADS ####
@@ -224,14 +224,24 @@ systemctl enable tomcat.service 2> /dev/null
 #install mysql
 echo
 cecho BIYellow "Installing MySQL:"
+echo "Remove existing version"
+apt-get -qq remove mysql-server
 echo "Installing engine"
-cecho BIRed "TODO"
+apt-get -qq install mysql-server
+echo "Setup DB and User"
+MAINDB="EssentialAM"
+USER="essential"
+PASSWORD="essential"
+mysql -e "CREATE DATABASE ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
+mysql -e "CREATE USER ${USER}@localhost IDENTIFIED BY '${PASSWORD}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
 
 #Install JDBC driver
 echo "Installing MySQL JDBC driver"
-apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
-cecho BIRed "TODO"
-#cp aaaaa.jar /root/Protege_3.5/driver.jar
+#apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
+tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
+cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /root/Protege_3.5/driver.jar
 
 echo
 #Install Protege
@@ -239,6 +249,8 @@ echo
 cecho BIYellow "Installing Protege:"
 if [ -d "/root/Protege_3.5/" ]; then
     cecho white "First uninstalling existing version"
+    systemctl disable protege.service 2> /dev/null
+    systemctl stop protege.service 2> /dev/null
     /root/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
 fi
 echo "Starting install"
@@ -254,6 +266,12 @@ mv Protege_new.lax /root/Protege_3.5/Protege.lax
 
 echo "Copy new start script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /root/Protege_3.5/
+
+echo "Copying tomcat service file and auto starting"
+cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
+systemctl daemon-reload 2> /dev/null
+systemctl start protege.service 2> /dev/null
+systemctl enable protege.service 2> /dev/null
 
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
