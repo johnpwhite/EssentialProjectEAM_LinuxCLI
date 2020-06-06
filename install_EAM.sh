@@ -228,14 +228,18 @@ echo "Remove existing version"
 apt-get -qq remove mysql-server
 echo "Installing engine"
 apt-get -qq install mysql-server
+echo "Modify settings"
+#/etc/mysql/mysql.conf.d/mysqld.cnf
 echo "Setup DB and User"
 MAINDB="EssentialAM"
 USER="essential"
 PASSWORD="essential"
 mysql -e "CREATE DATABASE ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 mysql -e "CREATE USER ${USER}@localhost IDENTIFIED BY '${PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
 mysql -e "FLUSH PRIVILEGES;"
+echo "Starting DB restore"
+mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
 
 #Install JDBC driver
 echo "Installing MySQL JDBC driver"
