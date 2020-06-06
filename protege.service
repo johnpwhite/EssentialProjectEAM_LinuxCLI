@@ -13,7 +13,7 @@ StandardOutput=syslog
 StandardError=syslog
 
 ExecStart=/root/Protege_3.5/run_protege_server_fix.sh
-ExecStop=/root/Protege_3.5/shutdown_protege_server.sh
+ExecStop=/root/Protege_3.5/shutdown_protege_server.sh ubuntutemplate.localdomain:5100
 
 [Install]
 WantedBy=multi-user.target

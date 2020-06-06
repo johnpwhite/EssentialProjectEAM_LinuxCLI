@@ -234,8 +234,8 @@ echo "Setup DB and User"
 MAINDB="EssentialAM"
 USER="essential"
 PASSWORD="essential"
-mysql -e "CREATE DATABASE ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-mysql -e "CREATE USER ${USER}@localhost IDENTIFIED BY '${PASSWORD}';"
+mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
+mysql -e "CREATE USER IF NOT EXISTS ${USER}@localhost IDENTIFIED BY '${PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
@@ -268,13 +268,13 @@ echo "Increase Protege.lax memory setting to 2gb"
 cat /root/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
 mv Protege_new.lax /root/Protege_3.5/Protege.lax
 
-echo "Copy new start script"
+echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /root/Protege_3.5/
+cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /root/Protege_3.5/
 
-echo "Copying tomcat service file and auto starting"
+echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
 systemctl daemon-reload 2> /dev/null
-systemctl start protege.service 2> /dev/null
 systemctl enable protege.service 2> /dev/null
 
 #Install Essential EA
@@ -289,8 +289,9 @@ echo "Copying latest model project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
-unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
-chmod 777 /opt/essentialAM/repo/essential_baseline_*
+#unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
+unzip -qq EssentialProjectEAM_LinuxCLI-master/repo_db.zip -d /opt/essentialAM/repo
+chmod 777 -R /opt/essentialAM/*
 echo "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
 
@@ -301,6 +302,8 @@ echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
 echo "ALL DONE!"
+cecho BIGreen "Starting protege"
+systemctl start protege.service 2> /dev/null
 
 # Clean up
 rm *.ENV 2> /dev/null
