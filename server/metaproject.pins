@@ -1,4 +1,4 @@
-; Wed Jul 11 20:59:12 CDT 2018
+; Sat Jun 06 21:33:25 AEST 2020
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
@@ -81,8 +81,8 @@
 		[metaproject_Instance_0]
 		[metaproject_Class0])
 	(name "Admin")
-	(password "574187203a6762fb25b06341115df74c")
-	(salt "b11cdeaff396938a"))
+	(password "4d48ad614ccd6d92c3865da9a4b7bcb4")
+	(salt "95d9f11be6b2bf79"))
 
 ([metaproject_Class20009] of  Server
 

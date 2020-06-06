@@ -1,4 +1,4 @@
-; Wed Jul 11 20:59:12 CDT 2018
+; Sat Jun 06 21:33:25 AEST 2020
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
@@ -48,6 +48,9 @@
 	(label "Instances")
 	(property_list [ProjectKB_0036_00038])
 	(widget_class_name "edu.stanford.smi.protege.widget.InstancesTab"))
+
+([KB_251870_Class3] of  Map
+)
 
 ([KB_386249_Instance_0] of  Property_List
 
@@ -426,9 +429,6 @@
 	(width 600)
 	(x 0)
 	(y 120))
-
-([KB_852111_Class3] of  Map
-)
 
 ([metaproject_ProjectKB_Class1] of  Widget
 
