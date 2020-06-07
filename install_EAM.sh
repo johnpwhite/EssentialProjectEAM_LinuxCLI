@@ -245,17 +245,17 @@ mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_ba
 echo "Installing MySQL JDBC driver"
 #apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
 tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
-cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /root/Protege_3.5/driver.jar
+cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.5/driver.jar
 
 echo
 #Install Protege
 #https://docs.flexera.com/installanywhere2012/Content/helplibrary/ia_ref_command_line_install_uninstall.htm
 cecho BIYellow "Installing Protege:"
-if [ -d "/root/Protege_3.5/" ]; then
+if [ -d "/opt/Protege_3.5/" ]; then
     cecho white "First uninstalling existing version"
     systemctl disable protege.service 2> /dev/null
     systemctl stop protege.service 2> /dev/null
-    /root/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
+    /opt/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
 fi
 echo "Starting install"
 ./install_protege_3.5-Linux64-noJVM.bin -i silent -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
@@ -271,6 +271,7 @@ mv Protege_new.lax /opt/Protege_3.5/Protege.lax
 echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
+chmod 777 /opt/Protege_3.5/*.sh
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
