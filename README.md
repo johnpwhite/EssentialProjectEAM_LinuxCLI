@@ -11,17 +11,15 @@ To install:
 
 3) ./install_EAM.sh
 
-
 4a) Install the client on your desktop following this https://enterprise-architecture.org/docs/essential_os_installation/multiuser_install/#client
 
 or
-4b) Run the client on the server and access via X11 (faster!)
 
-1) Install VcXsrv
-2) run /opt/Protege_3.5/run_protege.sh with user john
+4b) Run the client on the server and access via X11 (faster!)
+    a) Install VcXsrv
+    b) run /opt/Protege_3.5/run_protege.sh with user john
 
 5) Connect via other using:
-
-host: ubuntutemplate:5100
-user: Admin
-pass: Admin
+    host: ubuntutemplate:5100
+    user: Admin
+    pass: Admin
