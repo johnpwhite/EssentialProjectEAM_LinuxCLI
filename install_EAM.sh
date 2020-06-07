@@ -258,19 +258,19 @@ if [ -d "/root/Protege_3.5/" ]; then
     /root/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
 fi
 echo "Starting install"
-./install_protege_3.5-Linux64-noJVM.bin -i silent -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
+./install_protege_3.5-Linux64-noJVM.bin -i silent -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
 
 echo "Set Sort class tree to false in protege.properties"
-#sed -i '$ a ui.sort.class.tree=false' /root/Protege_3.5/protege.properties
-echo "ui.sort.class.tree=false" >> /root/Protege_3.5/protege.properties
+#sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
+echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
 
 echo "Increase Protege.lax memory setting to 2gb"
-cat /root/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
-mv Protege_new.lax /root/Protege_3.5/Protege.lax
+cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
+mv Protege_new.lax /opt/Protege_3.5/Protege.lax
 
 echo "Copy new start/stop script"
-cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /root/Protege_3.5/
-cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /root/Protege_3.5/
+cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
+cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
