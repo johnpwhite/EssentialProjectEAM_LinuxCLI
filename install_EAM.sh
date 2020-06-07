@@ -240,6 +240,8 @@ PASSWORD="essential"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 mysql -e "CREATE USER IF NOT EXISTS ${USER}@'%' IDENTIFIED BY '${PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
+mysql -e "CREATE USER IF NOT EXISTS ${USER}@'localhost' IDENTIFIED BY '${PASSWORD}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
 mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
@@ -270,11 +272,8 @@ cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
 chmod 777 -R /opt/Protege_3.5
-
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
-systemctl daemon-reload 2> /dev/null
-systemctl enable protege.service 2> /dev/null
 
 #Install JDBC driver
 echo "Installing MySQL JDBC driver"
@@ -305,6 +304,8 @@ cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
 echo "ALL DONE!"
 cecho BIGreen "Starting protege"
+systemctl daemon-reload 2> /dev/null
+systemctl enable protege.service 2> /dev/null
 systemctl start protege.service 2> /dev/null
 
 # Clean up
