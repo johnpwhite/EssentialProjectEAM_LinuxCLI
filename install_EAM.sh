@@ -275,8 +275,7 @@ echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
-chmod 666 -R /opt/Protege_3.5/*
-chmod 777 -R /opt/Protege_3.5/*.sh
+chmod 777 -R /opt/Protege_3.5
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
@@ -285,19 +284,16 @@ systemctl enable protege.service 2> /dev/null
 
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
-#PROTEGE_HOME="/root/Protege_3.5/"
-#SERVER_HOME="/root/Protege_3.5/server"
-java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml
+java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 2> /dev/null
 
 #Install the latest model
 cecho BIYellow "Installing Essential Model Project Files"
-echo "Copying latest model project files"
+echo "Copying preconfigured v6.10 model DB based project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
-#unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
 unzip -qq EssentialProjectEAM_LinuxCLI-master/repo_db.zip -d /opt/essentialAM/repo
-chmod 777 -R /opt/essentialAM/*
+chmod 777 -R /opt/essentialAM
 echo "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
 
