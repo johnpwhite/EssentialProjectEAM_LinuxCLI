@@ -140,11 +140,11 @@ else
     wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/essential-widgets/$(cat ./WIDGETS_VERSION.ENV) 2> /dev/null
 fi
 
-if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
-    cecho BIGreen "Essential Model download exists"
-else
-    wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
-fi
+#if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
+#    cecho BIGreen "Essential Model download exists"
+#else
+#    wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
+#fi
 
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Viewer download exists"
@@ -238,17 +238,11 @@ MAINDB="EssentialAM"
 USER="essential"
 PASSWORD="essential"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@localhost IDENTIFIED BY '${PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS ${USER}@% IDENTIFIED BY '${PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
 mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
-
-#Install JDBC driver
-echo "Installing MySQL JDBC driver"
-#apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
-tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
-cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.5/driver.jar
 
 echo
 #Install Protege
@@ -281,6 +275,12 @@ echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
 systemctl daemon-reload 2> /dev/null
 systemctl enable protege.service 2> /dev/null
+
+#Install JDBC driver
+echo "Installing MySQL JDBC driver"
+#apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
+tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
+cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.5/driver.jar
 
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
