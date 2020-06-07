@@ -1,6 +1,7 @@
 #!/bin/sh
 JAVA_PATH=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/bin/
-JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/driver.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
+#JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/driver.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
+JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
 MAIN_CLASS=edu.stanford.smi.protege.Application
 
 # ------------------- JVM Options ------------------- 
@@ -22,4 +23,4 @@ OPTIONS="${OPTIONS} ${DEBUG_OPT} ${YJP_OPT} ${DELAY} ${LOG4J_OPT}"
 # ------------------- JVM Options ------------------- 
 
 # Run Protege
-$JAVA_PATH/java $OPTIONS -cp $JARS $MAIN_CLASS $1
+$JAVA_PATH/java $OPTIONS -Dprotege.dir=/opt/Protege_3.5 -Duser.country=UK -Duser.language=en -cp $JARS $MAIN_CLASS $1

@@ -193,6 +193,9 @@ apt-get -qq remove openjdk-11-jre-headless
 cecho BIYellow "Installing Java:"
 echo "Running apt install openjdk-8-jre-headless"
 apt-get -qq install openjdk-8-jre-headless
+echo "Comment out java accessibility wrapper in case you run protege locally"
+cat /etc/java-8-openjdk/accessibility.properties | sed -e "s/assistive_technologies=org.GNOME.Accessibility.AtkWrapper/#assistive_technologies=org.GNOME.Accessibility.AtkWrapper/g" > accessibility_new.properties
+mv accessibility_new.properties /etc/java-8-openjdk/accessibility.properties
 
 echo
 #Install tomcat
@@ -271,7 +274,9 @@ mv Protege_new.lax /opt/Protege_3.5/Protege.lax
 echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
-chmod 777 /opt/Protege_3.5/*.sh
+cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
+chmod 666 -R /opt/Protege_3.5/*
+chmod 777 -R /opt/Protege_3.5/*.sh
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
