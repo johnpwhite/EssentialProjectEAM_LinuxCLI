@@ -14,7 +14,7 @@
 <pack index="7" name="Update Tab" selected="true"/>
 </com.izforge.izpack.panels.imgpacks.ImgPacksPanel>
 <com.izforge.izpack.panels.userinput.UserInputPanel id="Plugins">
-<entry key="PROTEGE_HOME" value="/root/Protege_3.5"/>
+<entry key="PROTEGE_HOME" value="/opt/Protege_3.5"/>
 </com.izforge.izpack.panels.userinput.UserInputPanel>
 <com.izforge.izpack.panels.target.TargetPanel id="NoRepository">
 <installpath>/opt/essentialAM/</installpath>
