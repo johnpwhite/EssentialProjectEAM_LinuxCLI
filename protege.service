@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/root/Protege_3.5/
+WorkingDirectory=/opt/Protege_3.5/
 
 Restart=always
 RestartSec=10
@@ -12,8 +12,8 @@ RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
 
-ExecStart=/root/Protege_3.5/run_protege_server_fix.sh
-ExecStop=/root/Protege_3.5/shutdown_protege_server.sh ubuntutemplate.localdomain:5100
+ExecStart=/opt/Protege_3.5/run_protege_server_fix.sh
+ExecStop=/opt/Protege_3.5/shutdown_protege_server.sh ubuntutemplate.localdomain:5100
 
 [Install]
 WantedBy=multi-user.target
