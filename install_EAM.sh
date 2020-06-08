@@ -263,7 +263,8 @@ echo "Starting install"
 
 echo "Set Sort class tree to false in protege.properties"
 #sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
-echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
+#echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
+cp protege.properties /opt/Protege_3.5/
 
 echo "Increase Protege.lax memory setting to 2gb"
 cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
