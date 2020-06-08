@@ -223,7 +223,7 @@ systemctl daemon-reload 2> /dev/null
 systemctl start tomcat.service 2> /dev/null
 systemctl enable tomcat.service 2> /dev/null
 echo "Comment out RemoteAddrValve for manager to allow remote access"
-cp context.xml /opt/tomcat/webapps/manager/META-INF/
+cp EssentialProjectEAM_LinuxCLI-master/context.xml /opt/tomcat/webapps/manager/META-INF/
 
 #install mysql
 echo
@@ -264,7 +264,7 @@ echo "Starting install"
 echo "Set Sort class tree to false in protege.properties"
 #sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
 #echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
-cp protege.properties /opt/Protege_3.5/
+EssentialProjectEAM_LinuxCLI-master/cp protege.properties /opt/Protege_3.5/
 
 echo "Increase Protege.lax memory setting to 2gb"
 cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
