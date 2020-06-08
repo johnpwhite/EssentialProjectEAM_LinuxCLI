@@ -195,7 +195,7 @@ echo "Running apt install openjdk-8-jre-headless"
 apt-get -qq install openjdk-8-jre-headless
 echo "Comment out java accessibility wrapper in case you run protege locally"
 cat /etc/java-8-openjdk/accessibility.properties | sed -e "s/assistive_technologies=org.GNOME.Accessibility.AtkWrapper/#assistive_technologies=org.GNOME.Accessibility.AtkWrapper/g" > accessibility_new.properties
-mv accessibility_new.properties /etc/java-8-openjdk/accessibility.properties
+cp accessibility_new.properties /etc/java-8-openjdk/accessibility.properties
 
 echo
 #Install tomcat
@@ -222,6 +222,9 @@ cp EssentialProjectEAM_LinuxCLI-master/tomcat.service /etc/systemd/system/
 systemctl daemon-reload 2> /dev/null
 systemctl start tomcat.service 2> /dev/null
 systemctl enable tomcat.service 2> /dev/null
+echo "Comment out RemoteAddrValve for manager to allow remote access"
+cat /opt/tomcat/webapps/manager/META-INF/context.xml | sed -e "s/<Valve className="org.apache.catalina.valves.RemoteAddrValve"\n         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />/<!--<Valve className="org.apache.catalina.valves.RemoteAddrValve"\n         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />-->" > context_new.xml
+cp context_new.xml /opt/tomcat/webapps/manager/META-INF/context.xml
 #systemctl status tomcat.service
 
 #install mysql
@@ -238,10 +241,8 @@ MAINDB="EssentialAM"
 USER="essential"
 PASSWORD="essential"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'%' IDENTIFIED BY '${PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS ${USER}@% IDENTIFIED BY '${PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'localhost' IDENTIFIED BY '${PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
 mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
