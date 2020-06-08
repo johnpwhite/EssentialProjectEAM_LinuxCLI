@@ -223,9 +223,7 @@ systemctl daemon-reload 2> /dev/null
 systemctl start tomcat.service 2> /dev/null
 systemctl enable tomcat.service 2> /dev/null
 echo "Comment out RemoteAddrValve for manager to allow remote access"
-cat /opt/tomcat/webapps/manager/META-INF/context.xml | sed -e "s/<Valve className="org.apache.catalina.valves.RemoteAddrValve"\n         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />/<!--<Valve className="org.apache.catalina.valves.RemoteAddrValve"\n         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />-->" > context_new.xml
-cp context_new.xml /opt/tomcat/webapps/manager/META-INF/context.xml
-#systemctl status tomcat.service
+cp context.xml /opt/tomcat/webapps/manager/META-INF/
 
 #install mysql
 echo
