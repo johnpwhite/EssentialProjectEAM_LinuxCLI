@@ -238,13 +238,14 @@ MAINDB="EssentialAM"
 USER="essential"
 PASSWORD="essential"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'%' IDENTIFIED BY '${PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS ${USER}@% IDENTIFIED BY '${PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'localhost' IDENTIFIED BY '${PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
 mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
+echo "Change settings to bind on all IP addresses - 0.0.0.0"
+cat /etc/mysql/mysql.conf.d/mysqld.cnf | sed -e "s/bind-address.*/bind-address=0.0.0.0/g" > mysqld_new.cnf
+cp mysqld_new.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
 echo
 #Install Protege
@@ -265,15 +266,18 @@ echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
 
 echo "Increase Protege.lax memory setting to 2gb"
 cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
-mv Protege_new.lax /opt/Protege_3.5/Protege.lax
+cp Protege_new.lax /opt/Protege_3.5/Protege.lax
 
 echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
 chmod 777 -R /opt/Protege_3.5
+
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
+systemctl daemon-reload 2> /dev/null
+systemctl enable protege.service 2> /dev/null
 
 #Install JDBC driver
 echo "Installing MySQL JDBC driver"
@@ -304,8 +308,6 @@ cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
 echo "ALL DONE!"
 cecho BIGreen "Starting protege"
-systemctl daemon-reload 2> /dev/null
-systemctl enable protege.service 2> /dev/null
 systemctl start protege.service 2> /dev/null
 
 # Clean up
