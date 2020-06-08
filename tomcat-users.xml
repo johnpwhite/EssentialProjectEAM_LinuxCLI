@@ -46,6 +46,6 @@ Essential Viewer
   <user username="admin" password="admin" roles="report_viewer"/>
 -->
 	<role rolename="manager-gui"/>
-	<user username="admin" password="H)l1$rd" roles="manager-gui"/>
+	<user username="admin" password="P$s5w)rd" roles="manager-gui"/>
 </tomcat-users>
 
