@@ -24,7 +24,7 @@ or
 
 4b) Run the client on the server and access via X11 (faster!)
     a) Install VcXsrv
-    b) run /opt/Protege_3.5/run_protege.sh with user john
+    b) run /opt/Protege_3.5/run_protege.sh with user john (or what ever admin account you created when installing ubuntu)
 
 5) Connect via protege 'open server connection' using:
     host: ubuntutemplate:5100
