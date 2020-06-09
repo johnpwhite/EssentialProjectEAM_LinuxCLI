@@ -26,7 +26,7 @@ or
     a) Install VcXsrv
     b) run /opt/Protege_3.5/run_protege.sh with user john
 
-5) Connect via other using:
+5) Connect via protege 'open server connection' using:
     host: ubuntutemplate:5100
     user: Admin
     pass: Admin
