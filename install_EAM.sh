@@ -311,7 +311,7 @@ echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
 cecho BIYellow "Re-starting mysql for changes to take effect"
-systemctl restart mysqle 2> /dev/null
+systemctl restart mysql 2> /dev/null
 
 cecho BIYellow "Starting protege"
 systemctl start protege.service 2> /dev/null
