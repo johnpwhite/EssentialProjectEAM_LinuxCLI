@@ -310,8 +310,10 @@ cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer.war
 echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
-echo "ALL DONE!"
-cecho BIGreen "Starting protege"
+cecho BIYellow "Re-starting mysql for changes to take effect"
+systemctl restart mysqle 2> /dev/null
+
+cecho BIYellow "Starting protege"
 systemctl start protege.service 2> /dev/null
 
 # Clean up
@@ -321,3 +323,5 @@ rm *.ENV 2> /dev/null
 #rm ./$(cat ./MODEL_VERSION.ENV)
 #rm ./$(cat ./VIEWER_VERSION.ENV)
 #rm ./$(cat ./IMPORT_VERSION.ENV)
+
+cecho BYGreen "ALL DONE!"
