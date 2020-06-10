@@ -1,6 +1,24 @@
 #!/bin/bash
 #Script to build Essential EA
-#clear
+
+#################################################
+## Some installers are hard coded:             ##
+## tomcat 9, but will get the latest variant   ##
+## MySQL JDBC Driver, specific version: 8.0.20 ##
+#################################################
+
+
+################################
+### Set your variables first ###
+################################
+#QUIETMODE=Y #disable most of the console output so you can see the wood for the trees, not recommended
+FQHN=$HOSTNAME #we need to set the hostname in a number of protege files
+DBUSER="essential"
+DBPASS="essential"
+RDP=N #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
+
+# Let's get the party started
+clear
 
 #Re-useable colour script
 declare -A colors
@@ -83,16 +101,23 @@ cecho() {
   echo -e "${colors[$1]}$2${colors[Color_Off]}"
 }
 
-#cecho BIYellow "TEST"
-
-#Make sure Ubunutu up to date and we have the tools we need
+#Make sure Ubunutu is up to date and we have the tools we need
 cecho BIYellow "Prep tasks:"
-cecho White "Updating OS with apt update"
-apt-get -qq update > /dev/null
-cecho White "Installing unzip"
-apt-get -qq install unzip > /dev/null
-echo
+echo "Updating OS with apt update"
+if [[ $QUIETMODE == "Y" ]]; then
+  apt-get -qq update > /dev/null
+else
+  apt-get update
+fi
 
+echo "Installing unzip"
+if [[ $QUIETMODE == "Y" ]]; then
+  apt-get -qq install unzip > /dev/null
+else
+  apt-get install unzip
+fi
+
+echo
 # Clean up
 rm *.ENV 2> /dev/null
 
@@ -105,8 +130,9 @@ wget -q https://www.enterprise-architecture.org/os_download.php -O - > ./EA_PAGE
 cat ./EA_PAGE.ENV | grep -o -E 'essentialinstallupgrade.*.jar' > ./WIDGETS_VERSION.ENV
 echo $(cat ./WIDGETS_VERSION.ENV)
 
+#We don't need this as we deploy a copy of the DB with the v6.10 model in
 cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
-echo $(cat ./MODEL_VERSION.ENV)
+#echo $(cat ./MODEL_VERSION.ENV)
 
 cat ./EA_PAGE.ENV | grep -o -E 'essential_viewer_.*.war' > ./VIEWER_VERSION.ENV
 echo $(cat ./VIEWER_VERSION.ENV)
@@ -115,31 +141,55 @@ cat ./EA_PAGE.ENV | grep -o -E 'essential_import_utility_.*.war' > ./IMPORT_VERS
 echo $(cat ./IMPORT_VERSION.ENV)
 
 echo
+#Check what the current version of the model is on the EA website, if not 6.10, warn the user to upgrade after install
+var=$(cat ./MODEL_VERSION.ENV)
+var=${var#*essential_baseline_v}
+var=${var%.zip}
+if [[ $var == "6.10" ]]; then
+    cecho BIGreen "This installs the latest Essential Project Model (v6.10)"
+else
+    cecho BIRed "There is a newer version of the Essential Project Model, please install the upgrade pack(s)"
+fi
+
+echo
 cecho BIYellow "Start downloads:"
 # Get support files
 cecho White "Downloading support files:"
 rm -R EssentialProjectEAM_LinuxCLI-master 2> /dev/null
 rm master.zip 2> /dev/null
-wget -q https://github.com/johnpwhite/EssentialProjectEAM_LinuxCLI/archive/master.zip 2> /dev/null
+
+if [[ $QUIETMODE == "Y" ]]; then
+  wget -q https://github.com/johnpwhite/EssentialProjectEAM_LinuxCLI/archive/master.zip 2> /dev/null
+else
+  wget --tries=3 --progress=bar:force:noscroll https://github.com/johnpwhite/EssentialProjectEAM_LinuxCLI/archive/master.zip
+fi
 
 # Download tomcat
 echo
 cecho BIYellow "Downloading Essential EA files:"
 cat ./TOMCAT_VERSION.ENV | grep -o -E 'apache-tomcat-9.*.tar.gz' > ./TOMCAT_FILENAME.ENV
-#echo $(cat ./TOMCAT_FILENAME.ENV)
 if [ -f "$(cat ./TOMCAT_FILENAME.ENV)" ]; then
     cecho BIGreen "Tomcat download exists"
 else
-    wget --tries=3 --progress=bar:force:noscroll $(cat ./TOMCAT_VERSION.ENV) 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 $(cat ./TOMCAT_VERSION.ENV) 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll $(cat ./TOMCAT_VERSION.ENV)
+  fi
 fi
 
 # Download essential project files
 if [ -f "$(cat ./WIDGETS_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Installer/Widgets download exists"
 else
-    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/essential-widgets/$(cat ./WIDGETS_VERSION.ENV) 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/essential-widgets/$(cat ./WIDGETS_VERSION.ENV) 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/essential-widgets/$(cat ./WIDGETS_VERSION.ENV)
+  fi
 fi
 
+#No longer needed as we deploy the model via DB restore
 #if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
 #    cecho BIGreen "Essential Model download exists"
 #else
@@ -149,13 +199,21 @@ fi
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Viewer download exists"
 else
-    wget --tries=3  --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/viewer/$(cat ./VIEWER_VERSION.ENV) 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/viewer/$(cat ./VIEWER_VERSION.ENV) 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/viewer/$(cat ./VIEWER_VERSION.ENV)
+  fi
 fi
 
 if [ -f "$(cat ./IMPORT_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Import Utility download exists"
 else
-    wget --tries=3  --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/import-utility/$(cat ./IMPORT_VERSION.ENV) 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/import-utility/$(cat ./IMPORT_VERSION.ENV) 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/import-utility/$(cat ./IMPORT_VERSION.ENV)
+  fi
 fi
 
 # Download Protege 3.5
@@ -163,25 +221,36 @@ fi
 if [ -f "install_protege_3.5-Linux64-noJVM.bin" ]; then
     cecho BIGreen "Protege Installer download exists"
 else
-    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/protege/install_protege_3.5-Linux64-noJVM.bin 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/protege/install_protege_3.5-Linux64-noJVM.bin 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/protege/install_protege_3.5-Linux64-noJVM.bin
+  fi
 fi
 
 # Download JDBC driver for MySQL
 if [ -f "mysql-connector-java-8.0.20.tar.gz" ]; then
     cecho BIGreen "MySQL JDBC Installer download exists"
 else
-    wget --tries=3 --progress=bar:force:noscroll https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.20.tar.gz 2> /dev/null
+  if [[ $QUIETMODE == "Y" ]]; then
+    wget -q --tries=3 https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.20.tar.gz 2> /dev/null
+  else
+    wget --tries=3 --progress=bar:force:noscroll https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.20.tar.gz
+  fi
 fi
 
 #### PREPARE DOWNLOADS ####
 echo
 cecho BIYellow "Unpacking downloads:"
 # Support files
+# These are the various settings and installer driver configs
 cecho White "Support files"
 rm -R EssentialProjectEAM_LinuxCLI-master 2> /dev/null
-unzip -qq master.zip
-
-#Essential
+if [[ $QUIETMODE == "Y" ]]; then
+  unzip -qq master.zip
+else
+  unzip master.zip
+fi
 
 #Protege
 chmod u+x install_protege_3.5-Linux64-noJVM.bin
@@ -192,7 +261,11 @@ echo
 apt-get -qq remove openjdk-11-jre-headless
 cecho BIYellow "Installing Java:"
 echo "Running apt install openjdk-8-jre-headless"
-apt-get -qq install openjdk-8-jre-headless
+if [[ $QUIETMODE == "Y" ]]; then
+  apt-get -qq install openjdk-8-jre-headless 2> /dev/null
+else
+  apt-get install openjdk-8-jre-headless
+fi
 echo "Comment out java accessibility wrapper in case you run protege locally"
 cat /etc/java-8-openjdk/accessibility.properties | sed -e "s/assistive_technologies=org.GNOME.Accessibility.AtkWrapper/#assistive_technologies=org.GNOME.Accessibility.AtkWrapper/g" > accessibility_new.properties
 cp accessibility_new.properties /etc/java-8-openjdk/accessibility.properties
@@ -201,26 +274,25 @@ echo
 #Install tomcat
 #Create tomcat user
 cecho BIYellow "Installing Tomcat:"
-cecho White "Setting up users"
+echo "Setting up users"
 groupadd tomcat 2> /dev/null
-useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat 2> /dev/null
+useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat #2> /dev/null
 
 # tomcat
-cecho White "Deploying Tomcat"
+echo "Deploying Tomcat"
 systemctl disable tomcat.service 2> /dev/null
 systemctl stop tomcat.service 2> /dev/null
 rm -R /opt/tomcat 2> /dev/null
 mkdir /opt/tomcat
 tar xzf $(cat ./TOMCAT_FILENAME.ENV) -C /opt/tomcat --strip-components=1
-cecho white "Setting user permissions"
+echo "Setting user permissions"
 chown -R tomcat: /opt/tomcat
 chmod +x /opt/tomcat/bin/*.sh
-cecho white "Copying webapp user conf file"
+echo "Copying webapp user conf file"
 cp EssentialProjectEAM_LinuxCLI-master/tomcat-users.xml /opt/tomcat/conf/
-cecho white "Copying tomcat service file and auto starting"
+echo "Copying tomcat service file and auto starting"
 cp EssentialProjectEAM_LinuxCLI-master/tomcat.service /etc/systemd/system/
 systemctl daemon-reload 2> /dev/null
-systemctl start tomcat.service 2> /dev/null
 systemctl enable tomcat.service 2> /dev/null
 echo "Comment out RemoteAddrValve for manager to allow remote access"
 cp EssentialProjectEAM_LinuxCLI-master/context.xml /opt/tomcat/webapps/manager/META-INF/
@@ -228,21 +300,20 @@ cp EssentialProjectEAM_LinuxCLI-master/context.xml /opt/tomcat/webapps/manager/M
 #install mysql
 echo
 cecho BIYellow "Installing MySQL:"
-echo "Remove existing version"
 apt-get -qq remove mysql-server
 echo "Installing engine"
-apt-get -qq install mysql-server
-echo "Modify settings"
-#/etc/mysql/mysql.conf.d/mysqld.cnf
+if [[ $QUIETMODE == "Y" ]]; then
+  apt-get -qq install mysql-server 2> /dev/null
+else
+  apt-get install mysql-server
+fi
 echo "Setup DB and User"
 MAINDB="EssentialAM"
-USER="essential"
-PASSWORD="essential"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'%' IDENTIFIED BY '${PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'%';"
-mysql -e "CREATE USER IF NOT EXISTS ${USER}@'localhost' IDENTIFIED BY '${PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${USER}'@'localhost';"
+mysql -e "CREATE USER IF NOT EXISTS ${DBUSER}@'%' IDENTIFIED BY '${DBPASS}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${DBUSER}'@'%';"
+mysql -e "CREATE USER IF NOT EXISTS ${DBUSER}@'localhost' IDENTIFIED BY '${DBPASS}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${DBUSER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 echo "Starting DB restore"
 mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
@@ -280,6 +351,19 @@ chmod 777 -R /opt/Protege_3.5
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
+
+echo "Updating host name in 3 Protege files"
+echo "protege.service"
+cat /etc/systemd/system/protege.service | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > protege_new.service
+cp protege_new.service /etc/systemd/system/protege.service
+echo "protege.properties"
+cat /opt/Protege_3.5/protege.properties | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > protege_new.properties
+cp protege_new.properties /opt/Protege_3.5/protege.properties
+echo "run_protege_server_fix.sh"
+cat /opt/Protege_3.5/run_protege_server_fix.sh | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > run_protege_server_fix_new.sh
+cp run_protege_server_fix_new.sh /opt/Protege_3.5/run_protege_server_fix.sh
+
+#Enable the protege service
 systemctl daemon-reload 2> /dev/null
 systemctl enable protege.service 2> /dev/null
 
@@ -289,6 +373,7 @@ echo "Installing MySQL JDBC driver"
 tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
 cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.5/driver.jar
 
+echo
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
 java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 2> /dev/null
@@ -316,6 +401,14 @@ systemctl restart mysql 2> /dev/null
 cecho BIYellow "Starting protege"
 systemctl start protege.service 2> /dev/null
 
+cecho BIYellow "Starting tomcat"
+systemctl start tomcat.service 2> /dev/null
+
+if [[ $RDP == "Y" ]]; then
+  apt-get install openbox
+  apt-get install xrdp
+fi
+
 # Clean up
 rm *.ENV 2> /dev/null
 #rm ./install_protege_3.5.bin
@@ -324,4 +417,4 @@ rm *.ENV 2> /dev/null
 #rm ./$(cat ./VIEWER_VERSION.ENV)
 #rm ./$(cat ./IMPORT_VERSION.ENV)
 
-cecho BYGreen "ALL DONE!"
+cecho BIGreen "ALL DONE!"
