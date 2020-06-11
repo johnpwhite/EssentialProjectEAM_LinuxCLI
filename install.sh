@@ -390,7 +390,7 @@ echo "Copying preconfigured v6.10 model DB based project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
-unzip -qq EssentialProjectEAM_LinuxCLI-master/repo_db.zip -d /opt/essentialAM/repo
+unzip -qq EssentialProjectEAM_LinuxCLI-master/essential_projects.zip -d /opt/essentialAM/repo
 chmod 777 -R /opt/essentialAM
 echo "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
