@@ -332,8 +332,11 @@ if [ -d "/opt/Protege_3.5/" ]; then
     /opt/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
 fi
 echo "Starting install"
-./install_protege_3.5-Linux64-noJVM.bin -i silent -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
-
+if [[ $QUIETMODE == "Y" ]]; then
+  ./install_protege_3.5-Linux64-noJVM.bin -i silent -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
+else
+  ./install_protege_3.5-Linux64-noJVM.bin -i console -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt
+fi
 echo "Set Sort class tree to false in protege.properties"
 #sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
 #echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
@@ -376,8 +379,11 @@ cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.
 echo
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
-java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 2> /dev/null
-
+if [[ $QUIETMODE == "Y" ]]; then
+  java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 2> /dev/null
+else
+  java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml
+fi
 #Install the latest model
 cecho BIYellow "Installing Essential Model Project Files"
 echo "Copying preconfigured v6.10 model DB based project files"
