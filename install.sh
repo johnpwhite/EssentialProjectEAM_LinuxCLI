@@ -415,7 +415,7 @@ if [[ $RDP == "Y" ]]; then
   apt-get install xrdp
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/xrdp.ini /etc/xrdp
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/startwm.sh /etc/xrdp
-  chmod 777 /etc/startwm.sh
+  chmod 777 /etc/xrdp/startwm.sh
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/rc.xml /etc/xdg/openbox/
 fi
 
