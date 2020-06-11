@@ -1,7 +1,6 @@
 #!/bin/sh
 JAVA_PATH=/usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/bin/
-#JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/driver.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
-JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
+JARS=/opt/Protege_3.5/protege.jar:/opt/Protege_3.5/driver.jar:/opt/Protege_3.5/looks.jar:/opt/Protege_3.5/unicode_panel.jar
 MAIN_CLASS=edu.stanford.smi.protege.Application
 
 # ------------------- JVM Options ------------------- 
