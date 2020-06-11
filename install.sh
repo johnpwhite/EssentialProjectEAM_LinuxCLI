@@ -413,6 +413,10 @@ systemctl start tomcat.service 2> /dev/null
 if [[ $RDP == "Y" ]]; then
   apt-get install openbox
   apt-get install xrdp
+  cp EssentialProjectEAM_LinuxCLI-master/xrdp/xrdp.ini /etc/xrdp
+  cp EssentialProjectEAM_LinuxCLI-master/xrdp/startwm.sh /etc/xrdp
+  chmod 777 /etc/startwm.sh
+  cp EssentialProjectEAM_LinuxCLI-master/xrdp/rc.xml /etc/xdg/openbox/
 fi
 
 # Clean up
