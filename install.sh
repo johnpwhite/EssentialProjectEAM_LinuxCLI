@@ -420,11 +420,10 @@ cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 echo "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)
 sleep 5 #to give tomcat enough time to unpack the war files above
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
-chmod 764 -R /opt/tomcat/webapps/essential_viewer/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
-chmod 764 -R /opt/tomcat/webapps/essential_viewer_dev/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
-chmod 764 -R /opt/tomcat/webapps/essential_viewer_test/user
+#Make sure the group can search and write to the full path
+chmod -R 775 /opt
 
 cecho BIYellow "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
