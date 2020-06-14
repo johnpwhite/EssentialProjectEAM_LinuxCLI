@@ -7,6 +7,13 @@
 ## MySQL JDBC Driver, specific version: 8.0.20 ##
 #################################################
 
+#Creating Protégé Users after install
+#useradd john
+#passwd john
+#(manually enter password)
+#usermod -a -G protegeusers john
+#mkdir /home/john
+#chown john:john /home/john/
 
 ################################
 ### Set your variables first ###
@@ -350,7 +357,7 @@ echo "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
-chmod 777 -R /opt/Protege_3.5
+chmod 775 -R /opt/Protege_3.5
 
 echo "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
@@ -369,6 +376,10 @@ cp run_protege_server_fix_new.sh /opt/Protege_3.5/run_protege_server_fix.sh
 #Enable the protege service
 systemctl daemon-reload 2> /dev/null
 systemctl enable protege.service 2> /dev/null
+
+#create group for future users
+groupadd protegeusers
+chgrp -R protegeusers /opt/Protege_3.5/
 
 #Install JDBC driver
 echo "Installing MySQL JDBC driver"
@@ -398,8 +409,22 @@ cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
 # Install the tomcat war files and tidy up
 echo "Installing Essential Viewer"
 cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer.war
+echo "Installing DEV Essential Viewer"
+cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_dev.war
+echo "Installing TEST Essential Viewer"
+cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
+
 echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
+
+echo "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)
+sleep 5 #to give tomcat enough time to unpack the war files above
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
+chmod 764 -R /opt/tomcat/webapps/essential_viewer/user
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
+chmod 764 -R /opt/tomcat/webapps/essential_viewer_dev/user
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
+chmod 764 -R /opt/tomcat/webapps/essential_viewer_test/user
 
 cecho BIYellow "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
