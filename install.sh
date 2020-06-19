@@ -23,6 +23,7 @@ FQHN=$HOSTNAME #we need to set the hostname in a number of protege files
 DBUSER="essential"
 DBPASS="essential"
 RDP=N #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
+WEBSWING="Y" #install WebSwing to host the protege java app in a web page, super cool.... say no to RDP with this.
 
 # Let's get the party started
 clear
@@ -441,6 +442,51 @@ if [[ $RDP == "Y" ]]; then
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/startwm.sh /etc/xrdp
   chmod 777 /etc/xrdp/startwm.sh
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/rc.xml /etc/xdg/openbox/
+fi
+
+if [[ $WEBSWING == "Y" ]]; then
+  cecho BIGreen "Deploying WebSwing to host Protege Java App"
+  # Get the latest version file name
+  cecho BIYellow "Identified the following latest version of webswing:"
+  wget -q https://bitbucket.org/meszarv/webswing/downloads/ -O - | grep -o -m 1 'webswing-.*\.zip"' | sed 's/"//g' > ./WEBSWING_VERSION.ENV
+  echo $(cat ./WEBSWING_VERSION.ENV)
+  
+  if [ -f "$(cat ./WEBSWING_VERSION.ENV)" ]; then
+    cecho BIGreen "WebSwing download exists"
+  else
+    if [[ $QUIETMODE == "Y" ]]; then
+      wget -q --tries=3 https://bitbucket.org/meszarv/webswing/downloads/$(cat ./WEBSWING_VERSION.ENV) 2> /dev/null
+    else
+      wget --tries=3 --progress=bar:force:noscroll https://bitbucket.org/meszarv/webswing/downloads/$(cat ./WEBSWING_VERSION.ENV)
+    fi
+  fi
+
+  #Unzip to target dir
+  rm -R /opt/webswing 2> /dev/null
+  mkdir /opt/webswing
+  Unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+
+  #Install dependencies
+  apt-get install xvfb -y
+  apt-get install libxext6 -y
+  apt-get install libxi6 -y
+  apt-get install libxtst6 -y
+  apt-get install libxrender1 -y
+
+  #Configure WebSwing
+  #nano jetty.properties
+  #Change ports to 80 & 443
+  
+  #UPDATE webswing.config
+  
+  systemctl disable webswing.service 2> /dev/null
+  systemctl stop webswing.service 2> /dev/null
+  
+  echo "Copying webswing service file and auto starting"
+  cp EssentialProjectEAM_LinuxCLI-master/webswing.service /etc/systemd/system/
+  systemctl daemon-reload 2> /dev/null
+  systemctl enable webswing.service 2> /dev/null
+  
 fi
 
 # Clean up
