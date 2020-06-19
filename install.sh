@@ -22,7 +22,7 @@
 FQHN=$HOSTNAME #we need to set the hostname in a number of protege files
 DBUSER="essential"
 DBPASS="essential"
-RDP=N #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
+RDP=N ##IGNORE NOW - See WebSwing## #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
 WEBSWING="Y" #install WebSwing to host the protege java app in a web page, super cool.... say no to RDP with this.
 
 # Let's get the party started
@@ -474,10 +474,12 @@ if [[ $WEBSWING == "Y" ]]; then
   apt-get install libxrender1 -y
 
   #Configure WebSwing
-  #nano jetty.properties
+  #jetty.properties
   #Change ports to 80 & 443
+  cp EssentialProjectEAM_LinuxCLI-master/jetty.properties /opt/webswing/
   
-  #UPDATE webswing.config
+  #UPDATE webswing.config to add Protege
+  cp EssentialProjectEAM_LinuxCLI-master/webswing.config /opt/webswing/
   
   systemctl disable webswing.service 2> /dev/null
   systemctl stop webswing.service 2> /dev/null
@@ -486,6 +488,9 @@ if [[ $WEBSWING == "Y" ]]; then
   cp EssentialProjectEAM_LinuxCLI-master/webswing.service /etc/systemd/system/
   systemctl daemon-reload 2> /dev/null
   systemctl enable webswing.service 2> /dev/null
+  
+  cecho BIYellow "Starting Webswing"
+  systemctl start webswing.service 2> /dev/null
   
 fi
 
