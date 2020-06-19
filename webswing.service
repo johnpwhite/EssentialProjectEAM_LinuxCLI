@@ -1,0 +1,13 @@
+[Unit]
+Description=WebSwing servlet container
+After=protege.service
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/webswing
+#Environment="JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64"
+ExecStart=/opt/webswing/webswing.sh start
+ExecStop=/opt/webswing/webswing.sh stop
+
+[Install]
+WantedBy=multi-user.target
