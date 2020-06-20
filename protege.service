@@ -12,7 +12,7 @@ RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
 
-ExecStart=/opt/Protege_3.5/run_protege_server_fix.sh
+ExecStart=/opt/Protege_3.5/run_protege_server.sh
 ExecStop=/opt/Protege_3.5/shutdown_protege_server.sh ubuntutemplate.localdomain:5100
 
 [Install]
