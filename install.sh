@@ -148,18 +148,16 @@ wget -q https://www.enterprise-architecture.org/os_download.php -O - > ./EA_PAGE
 cat ./EA_PAGE.ENV | grep -o -E 'essentialinstallupgrade.*.jar' > ./WIDGETS_VERSION.ENV
 cecho BIGreen $(cat ./WIDGETS_VERSION.ENV)
 
-if [[ $DBRESTORE == "N" ]]; then
-  cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
-  cecho BIGreen $(cat ./MODEL_VERSION.ENV)
-else
+cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
+cecho BIGreen $(cat ./MODEL_VERSION.ENV)
+  
+if [[ $DBRESTORE == "Y" ]]; then
   #We don't need this as we deploy a copy of the DB with the v6.10 model in
   #Check what the current version of the model is on the EA website, if not 6.10, warn the user to upgrade after install
   var=$(cat ./MODEL_VERSION.ENV)
   var=${var#*essential_baseline_v}
   var=${var%.zip}
-  if [[ $var == "6.10" ]]; then
-    cecho BIGreen "This installs the latest Essential Project Model (v6.10) via DB restore"
-  else
+  if [[ $var != "6.10" ]]; then
     cecho BIRed "There is a newer version of the Essential Project Model, please install the upgrade pack(s) after this completes"
   fi
 fi
