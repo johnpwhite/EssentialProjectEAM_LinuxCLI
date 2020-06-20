@@ -35,7 +35,7 @@ DBUSER="essential"
 DBPASS="essential"
 RDP=N ##IGNORE NOW - See WebSwing## #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
 WEBSWING="Y" #install WebSwing to host the protege java app in a web page, super cool.... say no to RDP with this.
-DBRESTORE="N" #If you want to not restore the pre configured v6.10, and install the latest non DB project files. You'll need to re setup the DB and Annotations project
+DBRESTORE="Y" #If you want to not restore the pre configured v6.10, and install the latest non DB project files. You'll need to re setup the DB and Annotations project
 
 # Let's get the party started
 #Re-useable colour script
