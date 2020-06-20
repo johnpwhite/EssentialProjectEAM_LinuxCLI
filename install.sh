@@ -208,15 +208,15 @@ else
   fi
 fi
 
-if [[ $DBRESTORE == "N" ]]; then
+if [[ $DBRESTORE != "N" ]]; then
+  #We don't need this as we deploy a copy of the DB with the v6.10 model in
+  echo "Skipping model download as deploying via DB& project restore"
+else
   if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
      cecho BIGreen "Essential Model download exists"
   else
      wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
   fi
-else
-  #We don't need this as we deploy a copy of the DB with the v6.10 model in
-  echo "Skipping model download as deploying via DB& project restore"
 fi
 
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
