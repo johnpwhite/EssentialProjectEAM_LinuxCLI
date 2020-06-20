@@ -448,19 +448,19 @@ cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
 cecho BIGreen "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
-cecho BIYellow "Re-starting mysql for changes to take effect"
+cecho BIPurple "Starting tomcat"
+systemctl start tomcat.service 2> /dev/null
+
+cecho BIPurple "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
 
-cecho BIYellow "Starting protege"
+cecho BIPurple "Starting protege"
 systemctl start protege.service 2> /dev/null
-
-cecho BIYellow "Starting tomcat"
-systemctl start tomcat.service 2> /dev/null
 
 #Not recommended now we have WebSwing
 if [[ $RDP == "Y" ]]; then
-  apt-get install openbox
-  apt-get install xrdp
+  apt-get install openbox -y
+  apt-get install xrdp -y
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/xrdp.ini /etc/xrdp
   cp EssentialProjectEAM_LinuxCLI-master/xrdp/startwm.sh /etc/xrdp
   chmod 777 /etc/xrdp/startwm.sh
@@ -514,12 +514,12 @@ if [[ $WEBSWING == "Y" ]]; then
   systemctl daemon-reload 2> /dev/null
   systemctl enable webswing.service 2> /dev/null
   
-  cecho BIYellow "Starting Webswing"
+  cecho BIPurple "Starting Webswing"
   systemctl start webswing.service 2> /dev/null
 fi
 
 cecho BIGreen "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)"
-sleep 5 #to give tomcat enough time to unpack the war files above
+sleep 10 #to give tomcat enough time to unpack the war files above
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
@@ -533,5 +533,6 @@ rm *.ENV 2> /dev/null
 #rm ./$(cat ./MODEL_VERSION.ENV)
 #rm ./$(cat ./VIEWER_VERSION.ENV)
 #rm ./$(cat ./IMPORT_VERSION.ENV)
+apt-get -qq autoremove -y
 
 cecho BIGreen "ALL DONE!"
