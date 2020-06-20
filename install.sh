@@ -345,6 +345,7 @@ cp mysqld_new.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
 if [[ $DBRESTORE == "N" ]]; then
   #No restore taken
+  echo "Skipping restore to deploy vendor project file based model in a later step"
 else
   echo "Starting DB restore"
   mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
