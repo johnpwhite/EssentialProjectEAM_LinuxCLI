@@ -8,7 +8,7 @@ https://enterprise-architecture.org/update_packs.php
 
 NOTE: The security posture of this is very low, it assumes you are using this to test the product and that you'll harden it for a production like instance. For instance user/passwords are very basic or passwords not required etc.
 
-Assumes: You have created an Unbuntu Server 20.04 instance
+Assumes: You have created an Unbuntu Server 18.04 instance as MYSQL is too new in 20.04 and will break the import tool.
 
 To install:
 
@@ -28,9 +28,13 @@ or
 
 5b) Run the client on the server and access via X11 (faster!)
     a) Install VcXsrv
-    b) run /opt/Protege_3.5/run_protege.sh with user john (or what ever admin account you created when installing ubuntu)
+    b) run /opt/Protege_3.5/run_protege.sh with whatever admin account you created when installing ubuntu
+
+5c) Access via RDP (Even faster!!)
+
+5d) Run the client with the webbroswe with WebSwing (Even fasterererer!!)
 
 6) Connect via protege 'open server connection' using:
-    host: ubuntutemplate:5100
+    host: localhost(or name of your server):5100
     user: Admin
     pass: Admin
