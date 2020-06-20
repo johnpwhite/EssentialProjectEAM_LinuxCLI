@@ -216,6 +216,7 @@ if [[ $DBRESTORE == "N" ]]; then
   fi
 else
   #We don't need this as we deploy a copy of the DB with the v6.10 model in
+  echo "Skipping model download as deploying via DB& project restore"
 fi
 
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
