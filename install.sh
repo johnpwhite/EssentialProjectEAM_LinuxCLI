@@ -449,7 +449,7 @@ cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
 echo "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
-echo "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)
+echo "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)"
 sleep 5 #to give tomcat enough time to unpack the war files above
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
