@@ -1,6 +1,7 @@
 [Unit]
 Description=Protege 3.5
-After=network.target
+#After=network.target
+After=mysql
 
 [Service]
 Type=simple
