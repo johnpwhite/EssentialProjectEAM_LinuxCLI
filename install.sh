@@ -1,4 +1,15 @@
 #!/bin/bash
+clear
+if [ $USER != root ] ; then
+  echo "Must be root, now exiting"
+  exit
+fi
+
+if [ "$(lsb_release -sr)" != "18.04" ] ; then
+  echo "Must be Ubuntu 18.04 else an unsupported of MYSQL will be used and will break the import tool, now exiting"
+  exit
+fi
+
 #Script to build Essential EA
 
 #################################################
@@ -27,8 +38,6 @@ WEBSWING="Y" #install WebSwing to host the protege java app in a web page, super
 DBRESTORE="N" #If you want to not restore the pre configured v6.10, and install the latest non DB project files. You'll need to re setup the DB and Annotations project
 
 # Let's get the party started
-clear
-
 #Re-useable colour script
 declare -A colors
 #curl www.bunlongheng.com/code/colors.png
