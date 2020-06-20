@@ -496,7 +496,7 @@ if [[ $WEBSWING == "Y" ]]; then
   #Unzip to target dir
   rm -R /opt/webswing 2> /dev/null
   mkdir /opt/webswing
-  Unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+  unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
 
   #Install dependencies
   apt-get install xvfb -y
