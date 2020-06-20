@@ -173,7 +173,7 @@ cecho BIGreen $(cat ./IMPORT_VERSION.ENV)
 echo
 cecho BIYellow "Start downloads:"
 # Get support files
-cecho BIGreen "Downloading support files:"
+cecho BIGreen "Downloading support files"
 rm -R EssentialProjectEAM_LinuxCLI-master 2> /dev/null
 rm master.zip 2> /dev/null
 
@@ -190,6 +190,7 @@ cat ./TOMCAT_VERSION.ENV | grep -o -E 'apache-tomcat-9.*.tar.gz' > ./TOMCAT_FILE
 if [ -f "$(cat ./TOMCAT_FILENAME.ENV)" ]; then
     cecho BIGreen "Tomcat download exists"
 else
+  cecho BIGreen "Downloading tomcat"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 $(cat ./TOMCAT_VERSION.ENV) 2> /dev/null
   else
@@ -201,6 +202,7 @@ fi
 if [ -f "$(cat ./WIDGETS_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Installer/Widgets download exists"
 else
+  cecho BIGreen "Downloading Essential Installer/Widgets"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/essential-widgets/$(cat ./WIDGETS_VERSION.ENV) 2> /dev/null
   else
@@ -215,13 +217,19 @@ else
   if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
      cecho BIGreen "Essential Model download exists"
   else
-     wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
+     cecho BIGreen "Downloading Essential Model"
+     if [[ $QUIETMODE == "Y" ]]; then
+       wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null     
+     else
+       wget --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV)
+     fi 
   fi
 fi
 
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Viewer download exists"
 else
+  cecho BIGreen "Downloading Essential Viewer"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/viewer/$(cat ./VIEWER_VERSION.ENV) 2> /dev/null
   else
@@ -232,6 +240,7 @@ fi
 if [ -f "$(cat ./IMPORT_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Import Utility download exists"
 else
+  cecho BIGreen "Downloading Essential Import Utility"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/import-utility/$(cat ./IMPORT_VERSION.ENV) 2> /dev/null
   else
@@ -244,6 +253,7 @@ fi
 if [ -f "install_protege_3.5-Linux64-noJVM.bin" ]; then
     cecho BIGreen "Protege Installer download exists"
 else
+  cecho BIGreen "Downloading Protege"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 https://essential-cdn.s3.eu-west-2.amazonaws.com/protege/install_protege_3.5-Linux64-noJVM.bin 2> /dev/null
   else
@@ -255,6 +265,7 @@ fi
 if [ -f "mysql-connector-java-8.0.20.tar.gz" ]; then
     cecho BIGreen "MySQL JDBC Installer download exists"
 else
+  cecho BIGreen "Downloading MySQL JDBC Installer"
   if [[ $QUIETMODE == "Y" ]]; then
     wget -q --tries=3 https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.20.tar.gz 2> /dev/null
   else
@@ -285,7 +296,7 @@ apt-get -qq remove openjdk-11-jre-headless
 cecho BIYellow "Installing Java:"
 echo "Running apt install openjdk-8-jre-headless"
 if [[ $QUIETMODE == "Y" ]]; then
-  apt-get -qq install openjdk-8-jre-headless 2> /dev/null
+  apt-get -qq install openjdk-8-jre-headless -y 1> /dev/null 2> /dev/null
 else
   apt-get install openjdk-8-jre-headless -y
 fi
@@ -329,7 +340,7 @@ cecho BIYellow "Installing MySQL:"
 apt-get -qq remove mysql-server
 cecho BIGreen "Installing engine"
 if [[ $QUIETMODE == "Y" ]]; then
-  apt-get -qq install mysql-server 2> /dev/null
+  apt-get -qq install mysql-server -y 1> /dev/null 2> /dev/null
 else
   apt-get install mysql-server -y
 fi
@@ -468,9 +479,9 @@ if [[ $RDP == "Y" ]]; then
 fi
 
 if [[ $WEBSWING == "Y" ]]; then
-  cecho BIGreen "Deploying WebSwing to host Protege Java App"
+  cecho BIYellow "Deploying WebSwing to host Protege Java App"
   # Get the latest version file name
-  cecho BIYellow "Identified the following latest version of webswing:"
+  cecho BIGreen "Identified the following latest version of webswing:"
   wget -q https://bitbucket.org/meszarv/webswing/downloads/ -O - | grep -o -m 1 'webswing-.*\.zip"' | sed 's/"//g' > ./WEBSWING_VERSION.ENV
   cecho BIGreen $(cat ./WEBSWING_VERSION.ENV)
   
@@ -492,11 +503,12 @@ if [[ $WEBSWING == "Y" ]]; then
   rmdir /opt/webswing/webswing-examples*
 
   #Install dependencies
-  apt-get install xvfb -y
-  apt-get install libxext6 -y
-  apt-get install libxi6 -y
-  apt-get install libxtst6 -y
-  apt-get install libxrender1 -y
+  cecho BIGreen "Installing WebSwing dependencies"
+  apt-get -qq install xvfb -y
+  apt-get -qq install libxext6 -y
+  apt-get -qq install libxi6 -y
+  apt-get -qq install libxtst6 -y
+  apt-get -qq install libxrender1 -y
 
   #Configure WebSwing
   cecho BIGreen "Configure WebSwing"
