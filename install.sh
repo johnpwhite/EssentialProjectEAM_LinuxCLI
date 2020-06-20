@@ -392,9 +392,9 @@ cp protege_new.service /etc/systemd/system/protege.service
 echo "protege.properties"
 cat /opt/Protege_3.5/protege.properties | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > protege_new.properties
 cp protege_new.properties /opt/Protege_3.5/protege.properties
-echo "run_protege_server_fix.sh"
-cat /opt/Protege_3.5/run_protege_server_fix.sh | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > run_protege_server_fix_new.sh
-cp run_protege_server_fix_new.sh /opt/Protege_3.5/run_protege_server_fix.sh
+echo "run_protege_server.sh"
+cat /opt/Protege_3.5/run_protege_server.sh | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > run_protege_server_new.sh
+cp run_protege_server_new.sh /opt/Protege_3.5/run_protege_server.sh
 
 #Enable the protege service
 systemctl daemon-reload 2> /dev/null
