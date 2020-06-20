@@ -132,7 +132,7 @@ echo "Installing unzip"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install unzip > /dev/null
 else
-  apt-get install unzip
+  apt-get install unzip -y
 fi
 
 echo
@@ -287,7 +287,7 @@ echo "Running apt install openjdk-8-jre-headless"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install openjdk-8-jre-headless 2> /dev/null
 else
-  apt-get install openjdk-8-jre-headless
+  apt-get install openjdk-8-jre-headless -y
 fi
 echo "Comment out java accessibility wrapper in case you run protege locally"
 cat /etc/java-8-openjdk/accessibility.properties | sed -e "s/assistive_technologies=org.GNOME.Accessibility.AtkWrapper/#assistive_technologies=org.GNOME.Accessibility.AtkWrapper/g" > accessibility_new.properties
@@ -328,7 +328,7 @@ echo "Installing engine"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install mysql-server 2> /dev/null
 else
-  apt-get install mysql-server
+  apt-get install mysql-server -y
 fi
 echo "Setup DB and User"
 MAINDB="EssentialAM"
