@@ -373,15 +373,13 @@ if [ -d "/opt/Protege_3.5/" ]; then
     systemctl stop protege.service 2> /dev/null
     /opt/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
 fi
-echo "Starting install"
+cecho BIGreen "Starting install"
 if [[ $QUIETMODE == "Y" ]]; then
   ./install_protege_3.5-Linux64-noJVM.bin -i silent -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt #2>/dev/null
 else
   ./install_protege_3.5-Linux64-noJVM.bin -i console -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt
 fi
 cecho BIGreen "Set Sort class tree to false in protege.properties"
-#sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
-#cecho BIGreen "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
 cp EssentialProjectEAM_LinuxCLI-master/protege.properties /opt/Protege_3.5/
 
 cecho BIGreen "Increase Protege.lax memory setting to 2gb"
