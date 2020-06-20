@@ -428,7 +428,7 @@ echo
 #Install Essential EA
 cecho BIYellow "Installing Essential EA:"
 if [[ $QUIETMODE == "Y" ]]; then
-  java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 2> /dev/null
+  java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml 1> /dev/null 2> /dev/null
 else
   java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml
 fi
@@ -498,7 +498,11 @@ if [[ $WEBSWING == "Y" ]]; then
   #Unzip to target dir
   rm -R /opt/webswing 2> /dev/null
   mkdir /opt/webswing
-  unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+  if [[ $QUIETMODE == "Y" ]]; then
+    unzip -qq $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+  else
+    unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+  fi
   mv /opt/webswing/webswing-examples*/* /opt/webswing/
   rmdir /opt/webswing/webswing-examples*
 
