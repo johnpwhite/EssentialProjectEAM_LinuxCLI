@@ -121,14 +121,14 @@ cecho() {
 
 #Make sure Ubunutu is up to date and we have the tools we need
 cecho BIYellow "Prep tasks:"
-echo "Updating OS with apt update"
+cecho BIGreen "Updating OS with apt update"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq update > /dev/null
 else
   apt-get update
 fi
 
-echo "Installing unzip"
+cecho BIGreen "Installing unzip"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install unzip > /dev/null
 else
@@ -142,15 +142,15 @@ rm *.ENV 2> /dev/null
 # Get the latest version file names
 cecho BIYellow "Identified the following latest versions:"
 wget -q https://tomcat.apache.org/download-90.cgi -O - | grep -o -E 'https://downloads.apache.org/tomcat/tomcat-9/v9.*.tar.gz' | head -1 > ./TOMCAT_VERSION.ENV
-echo $(cat ./TOMCAT_VERSION.ENV)
+cecho BIGreen $(cat ./TOMCAT_VERSION.ENV)
 
 wget -q https://www.enterprise-architecture.org/os_download.php -O - > ./EA_PAGE.ENV
 cat ./EA_PAGE.ENV | grep -o -E 'essentialinstallupgrade.*.jar' > ./WIDGETS_VERSION.ENV
-echo $(cat ./WIDGETS_VERSION.ENV)
+cecho BIGreen $(cat ./WIDGETS_VERSION.ENV)
 
 if [[ $DBRESTORE == "N" ]]; then
   cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
-  echo $(cat ./MODEL_VERSION.ENV)
+  cecho BIGreen $(cat ./MODEL_VERSION.ENV)
 else
   #We don't need this as we deploy a copy of the DB with the v6.10 model in
   #Check what the current version of the model is on the EA website, if not 6.10, warn the user to upgrade after install
@@ -165,15 +165,15 @@ else
 fi
 
 cat ./EA_PAGE.ENV | grep -o -E 'essential_viewer_.*.war' > ./VIEWER_VERSION.ENV
-echo $(cat ./VIEWER_VERSION.ENV)
+cecho BIGreen $(cat ./VIEWER_VERSION.ENV)
 
 cat ./EA_PAGE.ENV | grep -o -E 'essential_import_utility_.*.war' > ./IMPORT_VERSION.ENV
-echo $(cat ./IMPORT_VERSION.ENV)
+cecho BIGreen $(cat ./IMPORT_VERSION.ENV)
 
 echo
 cecho BIYellow "Start downloads:"
 # Get support files
-cecho White "Downloading support files:"
+cecho BIGreen "Downloading support files:"
 rm -R EssentialProjectEAM_LinuxCLI-master 2> /dev/null
 rm master.zip 2> /dev/null
 
@@ -267,7 +267,7 @@ echo
 cecho BIYellow "Unpacking downloads:"
 # Support files
 # These are the various settings and installer driver configs
-cecho White "Support files"
+cecho BIGreen "Support files"
 rm -R EssentialProjectEAM_LinuxCLI-master 2> /dev/null
 if [[ $QUIETMODE == "Y" ]]; then
   unzip -qq master.zip
@@ -289,7 +289,7 @@ if [[ $QUIETMODE == "Y" ]]; then
 else
   apt-get install openjdk-8-jre-headless -y
 fi
-echo "Comment out java accessibility wrapper in case you run protege locally"
+cecho BIGreen "Comment out java accessibility wrapper in case you run protege locally"
 cat /etc/java-8-openjdk/accessibility.properties | sed -e "s/assistive_technologies=org.GNOME.Accessibility.AtkWrapper/#assistive_technologies=org.GNOME.Accessibility.AtkWrapper/g" > accessibility_new.properties
 cp accessibility_new.properties /etc/java-8-openjdk/accessibility.properties
 
@@ -297,40 +297,40 @@ echo
 #Install tomcat
 #Create tomcat user
 cecho BIYellow "Installing Tomcat:"
-echo "Setting up users"
+cecho BIGreen "Setting up users"
 groupadd tomcat 2> /dev/null
 useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat #2> /dev/null
 
 # tomcat
-echo "Deploying Tomcat"
+cecho BIGreen "Deploying Tomcat"
 systemctl disable tomcat.service 2> /dev/null
 systemctl stop tomcat.service 2> /dev/null
 rm -R /opt/tomcat 2> /dev/null
 mkdir /opt/tomcat
 tar xzf $(cat ./TOMCAT_FILENAME.ENV) -C /opt/tomcat --strip-components=1
-echo "Setting user permissions"
+cecho BIGreen "Setting user permissions"
 chown -R tomcat: /opt/tomcat
 chmod +x /opt/tomcat/bin/*.sh
-echo "Copying webapp user conf file"
+cecho BIGreen "Copying webapp user conf file"
 cp EssentialProjectEAM_LinuxCLI-master/tomcat-users.xml /opt/tomcat/conf/
-echo "Copying tomcat service file and auto starting"
+cecho BIGreen "Copying tomcat service file and auto starting"
 cp EssentialProjectEAM_LinuxCLI-master/tomcat.service /etc/systemd/system/
 systemctl daemon-reload 2> /dev/null
 systemctl enable tomcat.service 2> /dev/null
-echo "Comment out RemoteAddrValve for manager to allow remote access"
+cecho BIGreen "Comment out RemoteAddrValve for manager to allow remote access"
 cp EssentialProjectEAM_LinuxCLI-master/context.xml /opt/tomcat/webapps/manager/META-INF/
 
 #install mysql
 echo
 cecho BIYellow "Installing MySQL:"
 apt-get -qq remove mysql-server
-echo "Installing engine"
+cecho BIGreen "Installing engine"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install mysql-server 2> /dev/null
 else
   apt-get install mysql-server -y
 fi
-echo "Setup DB and User"
+cecho BIGreen "Setup DB and User"
 MAINDB="EssentialAM"
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MAINDB} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 mysql -e "CREATE USER IF NOT EXISTS ${DBUSER}@'%' IDENTIFIED BY '${DBPASS}';"
@@ -339,15 +339,15 @@ mysql -e "CREATE USER IF NOT EXISTS ${DBUSER}@'localhost' IDENTIFIED BY '${DBPAS
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${DBUSER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 
-echo "Change settings to bind on all IP addresses - 0.0.0.0"
+cecho BIGreen "Change settings to bind on all IP addresses - 0.0.0.0"
 cat /etc/mysql/mysql.conf.d/mysqld.cnf | sed -e "s/bind-address.*/bind-address=0.0.0.0/g" > mysqld_new.cnf
 cp mysqld_new.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
 if [[ $DBRESTORE == "N" ]]; then
   #No restore taken
-  echo "Skipping restore to deploy vendor project file based model in a later step"
+  cecho BIGreen "Skipping restore to deploy vendor project file based model in a later step"
 else
-  echo "Starting DB restore"
+  cecho BIGreen "Starting DB restore"
   mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
 fi
 
@@ -356,7 +356,7 @@ echo
 #https://docs.flexera.com/installanywhere2012/Content/helplibrary/ia_ref_command_line_install_uninstall.htm
 cecho BIYellow "Installing Protege:"
 if [ -d "/opt/Protege_3.5/" ]; then
-    cecho white "First uninstalling existing version"
+    cecho BIGreen "First uninstalling existing version"
     systemctl disable protege.service 2> /dev/null
     systemctl stop protege.service 2> /dev/null
     /opt/Protege_3.5/Uninstall_Protege\ 3.5/Uninstall\ Protege\ 3.5 -i silent 2>/dev/null
@@ -367,32 +367,32 @@ if [[ $QUIETMODE == "Y" ]]; then
 else
   ./install_protege_3.5-Linux64-noJVM.bin -i console -DUSER_INSTALL_DIR="/opt/Protege_3.5" -f EssentialProjectEAM_LinuxCLI-master/protege-response.txt
 fi
-echo "Set Sort class tree to false in protege.properties"
+cecho BIGreen "Set Sort class tree to false in protege.properties"
 #sed -i '$ a ui.sort.class.tree=false' /opt/Protege_3.5/protege.properties
-#echo "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
+#cecho BIGreen "ui.sort.class.tree=false" >> /opt/Protege_3.5/protege.properties
 cp EssentialProjectEAM_LinuxCLI-master/protege.properties /opt/Protege_3.5/
 
-echo "Increase Protege.lax memory setting to 2gb"
+cecho BIGreen "Increase Protege.lax memory setting to 2gb"
 cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.max=.*/lax.nl.java.option.java.heap.size.max=2048000000/g" > Protege_new.lax
 cp Protege_new.lax /opt/Protege_3.5/Protege.lax
 
-echo "Copy new start/stop script"
+cecho BIGreen "Copy new start/stop script"
 cp EssentialProjectEAM_LinuxCLI-master/run_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
 chmod 775 -R /opt/Protege_3.5
 
-echo "Copying Protege service file"
+cecho BIGreen "Copying Protege service file"
 cp EssentialProjectEAM_LinuxCLI-master/protege.service /etc/systemd/system/
 
-echo "Updating host name in 3 Protege files"
-echo "protege.service"
+cecho BIGreen "Updating host name in 3 Protege files"
+cecho BIGreen "protege.service"
 cat /etc/systemd/system/protege.service | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > protege_new.service
 cp protege_new.service /etc/systemd/system/protege.service
-echo "protege.properties"
+cecho BIGreen "protege.properties"
 cat /opt/Protege_3.5/protege.properties | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > protege_new.properties
 cp protege_new.properties /opt/Protege_3.5/protege.properties
-echo "run_protege_server.sh"
+cecho BIGreen "run_protege_server.sh"
 cat /opt/Protege_3.5/run_protege_server.sh | sed -e "s/ubuntutemplate.localdomain/$FQHN/" > run_protege_server_new.sh
 cp run_protege_server_new.sh /opt/Protege_3.5/run_protege_server.sh
 
@@ -405,7 +405,7 @@ groupadd protegeusers
 chgrp -R protegeusers /opt/Protege_3.5/
 
 #Install JDBC driver
-echo "Installing MySQL JDBC driver"
+cecho BIGreen "Installing MySQL JDBC driver"
 #apt-get -qq install ./mysql-connector-java_8.0.20-1ubuntu20.04_all.deb #> /dev/null
 tar -xzf mysql-connector-java-8.0.20.tar.gz --wildcards --no-anchored '*.jar'
 cp ./mysql-connector-java-8.0.20/mysql-connector-java-8.0.20.jar /opt/Protege_3.5/driver.jar
@@ -420,42 +420,33 @@ else
 fi
 #Install the latest model
 cecho BIYellow "Installing Essential Model Project Files"
-echo "Copying preconfigured v6.10 model DB based project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
 
-echo "Copying server meta project files"
+cecho BIGreen "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
 
 if [[ $DBRESTORE == "N" ]]; then
-  echo "Unzipping latest meta model project files"
+  cecho BIGreen "Unzipping latest meta model project files"
   unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
 else
   #Restore the version configured to use the DB
-  echo "Restoring DB configured meta model project files"
+  cecho BIGreen "Restoring DB configured meta model project files"
   unzip -qq EssentialProjectEAM_LinuxCLI-master/essential_projects.zip -d /opt/essentialAM/repo
   chmod 777 -R /opt/essentialAM
 fi
 
 # Install the tomcat war files and tidy up
-echo "Installing Essential Viewer"
+cecho BIGreen "Installing Essential Viewer"
 cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer.war
-echo "Installing DEV Essential Viewer"
+cecho BIGreen "Installing DEV Essential Viewer"
 cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_dev.war
-echo "Installing TEST Essential Viewer"
+cecho BIGreen "Installing TEST Essential Viewer"
 cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
 
-echo "Installing Essential Import Utility"
+cecho BIGreen "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
-
-echo "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)"
-sleep 5 #to give tomcat enough time to unpack the war files above
-chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
-chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
-chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
-#Make sure the group can search and write to the full path
-chmod -R 775 /opt
 
 cecho BIYellow "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
@@ -481,7 +472,7 @@ if [[ $WEBSWING == "Y" ]]; then
   # Get the latest version file name
   cecho BIYellow "Identified the following latest version of webswing:"
   wget -q https://bitbucket.org/meszarv/webswing/downloads/ -O - | grep -o -m 1 'webswing-.*\.zip"' | sed 's/"//g' > ./WEBSWING_VERSION.ENV
-  echo $(cat ./WEBSWING_VERSION.ENV)
+  cecho BIGreen $(cat ./WEBSWING_VERSION.ENV)
   
   if [ -f "$(cat ./WEBSWING_VERSION.ENV)" ]; then
     cecho BIGreen "WebSwing download exists"
@@ -497,6 +488,8 @@ if [[ $WEBSWING == "Y" ]]; then
   rm -R /opt/webswing 2> /dev/null
   mkdir /opt/webswing
   unzip $(cat ./WEBSWING_VERSION.ENV) -d /opt/webswing/
+  mv /opt/webswing/webswing-examples*/* /opt/webswing/
+  rmdir /opt/webswing/webswing-examples*
 
   #Install dependencies
   apt-get install xvfb -y
@@ -506,6 +499,7 @@ if [[ $WEBSWING == "Y" ]]; then
   apt-get install libxrender1 -y
 
   #Configure WebSwing
+  cecho BIGreen "Configure WebSwing"
   #jetty.properties - Change ports to 80 & 443 and disable HTTP
   cp EssentialProjectEAM_LinuxCLI-master/jetty.properties /opt/webswing/
   
@@ -515,7 +509,7 @@ if [[ $WEBSWING == "Y" ]]; then
   systemctl disable webswing.service 2> /dev/null
   systemctl stop webswing.service 2> /dev/null
   
-  echo "Copying webswing service file and auto starting"
+  cecho BIGreen "Copying webswing service file and auto starting"
   cp EssentialProjectEAM_LinuxCLI-master/webswing.service /etc/systemd/system/
   systemctl daemon-reload 2> /dev/null
   systemctl enable webswing.service 2> /dev/null
@@ -523,6 +517,14 @@ if [[ $WEBSWING == "Y" ]]; then
   cecho BIYellow "Starting Webswing"
   systemctl start webswing.service 2> /dev/null
 fi
+
+cecho BIGreen "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)"
+sleep 5 #to give tomcat enough time to unpack the war files above
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
+chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
+#Make sure the group can search and write to the full path
+chmod -R 775 /opt
 
 # Clean up
 rm *.ENV 2> /dev/null
