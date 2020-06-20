@@ -1,4 +1,4 @@
-; Sat Jun 06 15:19:22 UTC 2020
+; Sat Jun 20 14:21:49 UTC 2020
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
@@ -32,7 +32,7 @@
 		[metaproject_Class10005])
 	(annotationProject [metaproject_Class40000])
 	(location "/opt/essentialAM/repo/essential_baseline_v6_10.pprj")
-	(name "Collaborative Baseline")
+	(name "Essential Architecture Manager")
 	(policyModifiableByClient TRUE))
 
 ([metaproject_Class2] of  ProjectAppliedOperation
@@ -80,7 +80,8 @@
 		[metaproject_Class20003]
 		[metaproject_Instance_0]
 		[metaproject_Class0])
-	(lastLogin "1591456712922")
+	(lastAccess "1592662786615")
+	(lastLogin "1592662851588")
 	(name "Admin")
 	(password "4d48ad614ccd6d92c3865da9a4b7bcb4")
 	(salt "95d9f11be6b2bf79"))
@@ -135,7 +136,7 @@
 		[metaproject_Instance_10008]
 		[metaproject_Class10005])
 	(location "/opt/essentialAM/repo/annotation_essential_baseline_v6_10.pprj")
-	(name "Collaborative Baseline Annotations")
+	(name "Essential Architecture Manager Annotations")
 	(policyModifiableByClient TRUE))
 
 ([metaproject_Instance_0] of  Group
