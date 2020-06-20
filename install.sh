@@ -24,6 +24,7 @@ DBUSER="essential"
 DBPASS="essential"
 RDP=N ##IGNORE NOW - See WebSwing## #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
 WEBSWING="Y" #install WebSwing to host the protege java app in a web page, super cool.... say no to RDP with this.
+DBRESTORE="N" #If you want to not restore the pre configured v6.10, and install the latest non DB project files. You'll need to re setup the DB and Annotations project
 
 # Let's get the party started
 clear
@@ -138,26 +139,27 @@ wget -q https://www.enterprise-architecture.org/os_download.php -O - > ./EA_PAGE
 cat ./EA_PAGE.ENV | grep -o -E 'essentialinstallupgrade.*.jar' > ./WIDGETS_VERSION.ENV
 echo $(cat ./WIDGETS_VERSION.ENV)
 
-#We don't need this as we deploy a copy of the DB with the v6.10 model in
-cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
-#echo $(cat ./MODEL_VERSION.ENV)
+if [[ $DBRESTORE == "N" ]]; then
+  cat ./EA_PAGE.ENV | grep -o -E 'essential_baseline_v.*.zip' > ./MODEL_VERSION.ENV
+  echo $(cat ./MODEL_VERSION.ENV)
+else
+  #We don't need this as we deploy a copy of the DB with the v6.10 model in
+  #Check what the current version of the model is on the EA website, if not 6.10, warn the user to upgrade after install
+  var=$(cat ./MODEL_VERSION.ENV)
+  var=${var#*essential_baseline_v}
+  var=${var%.zip}
+  if [[ $var == "6.10" ]]; then
+    cecho BIGreen "This installs the latest Essential Project Model (v6.10) via DB restore"
+  else
+    cecho BIRed "There is a newer version of the Essential Project Model, please install the upgrade pack(s) after this completes"
+  fi
+fi
 
 cat ./EA_PAGE.ENV | grep -o -E 'essential_viewer_.*.war' > ./VIEWER_VERSION.ENV
 echo $(cat ./VIEWER_VERSION.ENV)
 
 cat ./EA_PAGE.ENV | grep -o -E 'essential_import_utility_.*.war' > ./IMPORT_VERSION.ENV
 echo $(cat ./IMPORT_VERSION.ENV)
-
-echo
-#Check what the current version of the model is on the EA website, if not 6.10, warn the user to upgrade after install
-var=$(cat ./MODEL_VERSION.ENV)
-var=${var#*essential_baseline_v}
-var=${var%.zip}
-if [[ $var == "6.10" ]]; then
-    cecho BIGreen "This installs the latest Essential Project Model (v6.10)"
-else
-    cecho BIRed "There is a newer version of the Essential Project Model, please install the upgrade pack(s)"
-fi
 
 echo
 cecho BIYellow "Start downloads:"
@@ -197,12 +199,15 @@ else
   fi
 fi
 
-#No longer needed as we deploy the model via DB restore
-#if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
-#    cecho BIGreen "Essential Model download exists"
-#else
-#    wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
-#fi
+if [[ $DBRESTORE == "N" ]]; then
+  if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
+     cecho BIGreen "Essential Model download exists"
+  else
+     wget  --tries=3 --progress=bar:force:noscroll https://essential-cdn.s3.eu-west-2.amazonaws.com/meta-model/$(cat ./MODEL_VERSION.ENV) 2> /dev/null
+  fi
+else
+  #We don't need this as we deploy a copy of the DB with the v6.10 model in
+fi
 
 if [ -f "$(cat ./VIEWER_VERSION.ENV)" ]; then
     cecho BIGreen "Essential Viewer download exists"
@@ -323,11 +328,17 @@ mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${DBUSER}'@'%';"
 mysql -e "CREATE USER IF NOT EXISTS ${DBUSER}@'localhost' IDENTIFIED BY '${DBPASS}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MAINDB}.* TO '${DBUSER}'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
-echo "Starting DB restore"
-mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
+
 echo "Change settings to bind on all IP addresses - 0.0.0.0"
 cat /etc/mysql/mysql.conf.d/mysqld.cnf | sed -e "s/bind-address.*/bind-address=0.0.0.0/g" > mysqld_new.cnf
 cp mysqld_new.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+
+if [[ $DBRESTORE == "N" ]]; then
+  #No restore taken
+else
+  echo "Starting DB restore"
+  mysql --one-database ${MAINDB}  <  EssentialProjectEAM_LinuxCLI-master/EARepo_backup.sql
+fi
 
 echo
 #Install Protege
@@ -402,10 +413,19 @@ echo "Copying preconfigured v6.10 model DB based project files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
-unzip -qq EssentialProjectEAM_LinuxCLI-master/essential_projects.zip -d /opt/essentialAM/repo
-chmod 777 -R /opt/essentialAM
+
 echo "Copying server meta project files"
 cp -r EssentialProjectEAM_LinuxCLI-master/server /opt/essentialAM/server
+
+if [[ $DBRESTORE == "N" ]]; then
+  echo "Unzipping latest meta model project files"
+  unzip -qq $(cat ./MODEL_VERSION.ENV) -d /opt/essentialAM/repo
+else
+  #Restore the version configured to use the DB
+  echo "Restoring DB configured meta model project files"
+  unzip -qq EssentialProjectEAM_LinuxCLI-master/essential_projects.zip -d /opt/essentialAM/repo
+  chmod 777 -R /opt/essentialAM
+fi
 
 # Install the tomcat war files and tidy up
 echo "Installing Essential Viewer"
@@ -435,6 +455,7 @@ systemctl start protege.service 2> /dev/null
 cecho BIYellow "Starting tomcat"
 systemctl start tomcat.service 2> /dev/null
 
+#Not recommended now we have WebSwing
 if [[ $RDP == "Y" ]]; then
   apt-get install openbox
   apt-get install xrdp
@@ -474,8 +495,7 @@ if [[ $WEBSWING == "Y" ]]; then
   apt-get install libxrender1 -y
 
   #Configure WebSwing
-  #jetty.properties
-  #Change ports to 80 & 443
+  #jetty.properties - Change ports to 80 & 443 and disable HTTP
   cp EssentialProjectEAM_LinuxCLI-master/jetty.properties /opt/webswing/
   
   #UPDATE webswing.config to add Protege
@@ -491,7 +511,6 @@ if [[ $WEBSWING == "Y" ]]; then
   
   cecho BIYellow "Starting Webswing"
   systemctl start webswing.service 2> /dev/null
-  
 fi
 
 # Clean up
