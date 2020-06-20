@@ -506,10 +506,12 @@ if [[ $WEBSWING == "Y" ]]; then
   #UPDATE webswing.config to add Protege
   cp EssentialProjectEAM_LinuxCLI-master/webswing.config /opt/webswing/
   
-  systemctl disable webswing.service 2> /dev/null
-  systemctl stop webswing.service 2> /dev/null
+  cecho BIGreen "Copying protege logo to webswing directory"
+  cp EssentialProjectEAM_LinuxCLI-master/protege_logo.png /opt/webswing/
   
   cecho BIGreen "Copying webswing service file and auto starting"
+  systemctl disable webswing.service 2> /dev/null
+  systemctl stop webswing.service 2> /dev/null
   cp EssentialProjectEAM_LinuxCLI-master/webswing.service /etc/systemd/system/
   systemctl daemon-reload 2> /dev/null
   systemctl enable webswing.service 2> /dev/null
