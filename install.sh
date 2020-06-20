@@ -366,7 +366,7 @@ cat /opt/Protege_3.5/Protege.lax | sed -e "s/lax.nl.java.option.java.heap.size.m
 cp Protege_new.lax /opt/Protege_3.5/Protege.lax
 
 echo "Copy new start/stop script"
-cp EssentialProjectEAM_LinuxCLI-master/run_protege_server_fix.sh /opt/Protege_3.5/
+cp EssentialProjectEAM_LinuxCLI-master/run_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/shutdown_protege_server.sh /opt/Protege_3.5/
 cp EssentialProjectEAM_LinuxCLI-master/run_protege.sh /opt/Protege_3.5/
 chmod 775 -R /opt/Protege_3.5
