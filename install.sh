@@ -320,6 +320,9 @@ systemctl enable tomcat.service 2> /dev/null
 cecho BIGreen "Comment out RemoteAddrValve for manager to allow remote access"
 cp EssentialProjectEAM_LinuxCLI-master/context.xml /opt/tomcat/webapps/manager/META-INF/
 
+cecho BIPurple "Starting tomcat"
+systemctl start tomcat.service 2> /dev/null
+
 #install mysql
 echo
 cecho BIYellow "Installing MySQL:"
@@ -448,10 +451,7 @@ cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
 cecho BIGreen "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
-cecho BIPurple "Starting tomcat"
-systemctl start tomcat.service 2> /dev/null
-
-cecho BIPurple "Re-starting mysql for changes to take effect"
+cecho BIGreen "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
 
 cecho BIPurple "Starting protege"
@@ -521,7 +521,7 @@ if [[ $WEBSWING == "Y" ]]; then
 fi
 
 cecho BIGreen "Give group 'protegeusers' access to the user folder in the viewer (to allow uploads for branding etc.)"
-sleep 10 #to give tomcat enough time to unpack the war files above
+sleep 5 #to give tomcat enough time to unpack the war files above
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
