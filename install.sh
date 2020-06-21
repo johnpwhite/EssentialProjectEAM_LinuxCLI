@@ -290,7 +290,7 @@ echo
 #Install Java
 apt-get -qq remove openjdk-11-jre-headless
 cecho BIYellow "Installing Java:"
-echo "Running apt install openjdk-8-jre-headless"
+cecho BIGreen "Running apt install openjdk-8-jre-headless"
 if [[ $QUIETMODE == "Y" ]]; then
   apt-get -qq install openjdk-8-jre-headless -y 1> /dev/null 2> /dev/null
 else
