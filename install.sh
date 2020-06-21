@@ -29,8 +29,8 @@ fi
 ################################
 ### Set your variables first ###
 ################################
-#QUIETMODE=Y #disable most of the console output so you can see the wood for the trees, not recommended
-FQHN=$HOSTNAME #we need to set the hostname in a number of protege files
+QUIETMODE=Y #disable most of the console output so you can see the wood for the trees, not recommended
+FQHN=localhost # Unlikely need real host if webswing used as everything runs on box $HOSTNAME #we need to set the hostname in a number of protege files
 DBUSER="essential"
 DBPASS="essential"
 RDP=N ##IGNORE NOW - See WebSwing## #Install OpenBox Window manager, and xrdp to support launching Protege from a windows RDP client (no client install required!)
