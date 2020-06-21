@@ -22,19 +22,9 @@ nano install.sh
 
 4) ./install.sh
 
-5a) Install the client on your desktop following this https://enterprise-architecture.org/docs/essential_os_installation/multiuser_install/#client
-
-or
-
-5b) Run the client on the server and access via X11 (faster!)
-    a) Install VcXsrv
-    b) run /opt/Protege_3.5/run_protege.sh with whatever admin account you created when installing ubuntu
-
-5c) Access via RDP (Even faster!!)
-
-5d) Run the client with the webbroswe with WebSwing (Even fasterererer!!)
+5) Browse to https://yourserver/protege (You'll get SSL errors, just ignore those)
 
 6) Connect via protege 'open server connection' using:
-    host: localhost(or name of your server):5100
+    host: localhost:5100
     user: Admin
     pass: Admin
