@@ -427,7 +427,6 @@ else
   java -jar $(cat ./WIDGETS_VERSION.ENV) -mode=silent EssentialProjectEAM_LinuxCLI-master/auto-install.xml
 fi
 #Install the latest model
-cecho BIYellow "Installing Essential Model Project Files"
 rm -R /opt/essentialAM/ 2> /dev/null
 mkdir /opt/essentialAM 2> /dev/null
 mkdir /opt/essentialAM/repo 2> /dev/null
@@ -456,7 +455,8 @@ cp $(cat ./VIEWER_VERSION.ENV) /opt/tomcat/webapps/essential_viewer_test.war
 cecho BIGreen "Installing Essential Import Utility"
 cp $(cat ./IMPORT_VERSION.ENV) /opt/tomcat/webapps/essential_import_utility.war
 
-cecho BIGreen "Re-starting mysql for changes to take effect"
+echo
+cecho BIPurple "Re-starting mysql for changes to take effect"
 systemctl restart mysql 2> /dev/null
 
 cecho BIPurple "Starting protege"
@@ -473,6 +473,7 @@ if [[ $RDP == "Y" ]]; then
 fi
 
 if [[ $WEBSWING == "Y" ]]; then
+  echo
   cecho BIYellow "Deploying WebSwing to host Protege Java App"
   # Get the latest version file name
   cecho BIGreen "Identified the following latest version of webswing:"
@@ -502,11 +503,11 @@ if [[ $WEBSWING == "Y" ]]; then
 
   #Install dependencies
   cecho BIGreen "Installing WebSwing dependencies"
-  apt-get -qq install xvfb -y
-  apt-get -qq install libxext6 -y
-  apt-get -qq install libxi6 -y
-  apt-get -qq install libxtst6 -y
-  apt-get -qq install libxrender1 -y
+  apt-get -qq install xvfb -y 1> /dev/null 2> /dev/null
+  apt-get -qq install libxext6 -y 1> /dev/null 2> /dev/null
+  apt-get -qq install libxi6 -y 1> /dev/null 2> /dev/null
+  apt-get -qq install libxtst6 -y 1> /dev/null 2> /dev/null
+  apt-get -qq install libxrender1 -y 1> /dev/null 2> /dev/null
 
   #Configure WebSwing
   cecho BIGreen "Configure WebSwing"
@@ -549,4 +550,5 @@ rm *.ENV 2> /dev/null
 #rm ./$(cat ./IMPORT_VERSION.ENV)
 apt-get -qq autoremove -y
 
+echo
 cecho BIGreen "ALL DONE!"
