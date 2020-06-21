@@ -182,8 +182,6 @@ else
 fi
 
 # Download tomcat
-echo
-cecho BIYellow "Downloading Essential EA files:"
 cat ./TOMCAT_VERSION.ENV | grep -o -E 'apache-tomcat-9.*.tar.gz' > ./TOMCAT_FILENAME.ENV
 if [ -f "$(cat ./TOMCAT_FILENAME.ENV)" ]; then
     cecho BIGreen "Tomcat download exists"
@@ -210,7 +208,7 @@ fi
 
 if [[ $DBRESTORE != "N" ]]; then
   #We don't need this as we deploy a copy of the DB with the v6.10 model in
-  echo "Skipping model download as deploying via DB& project restore"
+  echo "Skipping model download as deploying via DB project restore"
 else
   if [ -f "$(cat ./MODEL_VERSION.ENV)" ]; then
      cecho BIGreen "Essential Model download exists"
