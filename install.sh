@@ -537,8 +537,10 @@ sleep 5 #to give tomcat enough time to unpack the war files above
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_dev/user
 chgrp -R protegeusers /opt/tomcat/webapps/essential_viewer_test/user
+
 #Make sure the group can search and write to the full path
-chmod -R 775 /opt
+chgrp -R protegeusers /opt
+chmod -R 774 /opt
 
 # Clean up
 rm *.ENV 2> /dev/null
