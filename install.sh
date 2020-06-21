@@ -411,8 +411,8 @@ systemctl daemon-reload 2> /dev/null
 systemctl enable protege.service 2> /dev/null
 
 #create group for future users
-groupadd protegeusers
-chgrp -R protegeusers /opt/Protege_3.5/
+#groupadd protegeusers
+#chgrp -R protegeusers /opt/Protege_3.5/
 
 #Install JDBC driver
 cecho BIGreen "Installing MySQL JDBC driver"
